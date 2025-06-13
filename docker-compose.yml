@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  # API Gateway (NGINX) - The single entry point
+  nginx:
+    build: ./nginx
+    container_name: api_gateway
+    ports:
+      - "80:80" # Expose port 80 on your machine to the gateway
+    depends_on:
+      - user-service
+      - auth-service
+
+  # User Service
+  user-service:
+    build: ./services/user-service
+    container_name: user_service
+    environment:
+      DB_USER: user
+      DB_PASSWORD: password
+      DB_HOST: postgres_db
+      DB_NAME: cargo_db
+      DB_PORT: 5432
+    depends_on:
+      - postgres
+
+  # Auth Service
+  auth-service:
+    build: ./services/auth-service
+    container_name: auth_service
+
+  # Our PostgreSQL Database Service
+  postgres:
+    image: postgres:13-alpine
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: cargo_db
+    # No need to expose the port publicly anymore, services connect internally
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
