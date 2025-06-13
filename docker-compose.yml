@@ -10,6 +10,7 @@ services:
     depends_on:
       - user-service
       - auth-service
+      - tracking-service
 
   # User Service
   user-service:
@@ -28,6 +29,11 @@ services:
   auth-service:
     build: ./services/auth-service
     container_name: auth_service
+
+  tracking-service:
+    build: ./services/tracking-service
+    container_name: tracking_service
+    
 
   # Our PostgreSQL Database Service
   postgres:
