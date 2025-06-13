@@ -6,11 +6,12 @@ services:
     build: ./nginx
     container_name: api_gateway
     ports:
-      - "80:80" # Expose port 80 on your machine to the gateway
+      - "8080:80"
     depends_on:
       - user-service
       - auth-service
       - tracking-service
+      - frontend
 
   # User Service
   user-service:
@@ -23,17 +24,35 @@ services:
       DB_NAME: cargo_db
       DB_PORT: 5432
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
 
   # Auth Service
   auth-service:
     build: ./services/auth-service
     container_name: auth_service
+    environment:
+      DB_USER: user
+      DB_PASSWORD: password
+      DB_HOST: postgres_db
+      DB_NAME: cargo_db
+      DB_PORT: 5432
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   tracking-service:
     build: ./services/tracking-service
     container_name: tracking_service
-    
+    environment:
+      DB_USER: user
+      DB_PASSWORD: password
+      DB_HOST: postgres_db
+      DB_NAME: cargo_db
+      DB_PORT: 5432
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   # Our PostgreSQL Database Service
   postgres:
@@ -43,9 +62,13 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
       POSTGRES_DB: cargo_db
-    # No need to expose the port publicly anymore, services connect internally
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d cargo_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # Message Broker Service (RabbitMQ)
   rabbitmq:
@@ -56,18 +79,37 @@ services:
       - "15672:15672" # Management UI port
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   update-service:
     build: ./services/update-service
     container_name: update_service
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
     depends_on:
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
 
   notification-service:
     build: ./services/notification-service
     container_name: notification_service
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
     depends_on:
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
+
+  # Frontend Service
+  frontend:
+    build: ./frontend
+    container_name: frontend_service
+    
   
 volumes:
   postgres_data:

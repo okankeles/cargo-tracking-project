@@ -1,0 +1,31 @@
+/* frontend/src/App.css */
+.App { text-align: center; }
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+.button-container { margin: 20px 0; }
+button {
+  font-size: 16px;
+  padding: 10px 20px;
+  margin: 0 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  border: none;
+}
+.success-message {
+  margin-top: 20px;
+  color: #61dafb;
+  font-weight: bold;
+}
+.error-message {
+  margin-top: 20px;
+  color: #ff6b6b;
+  font-weight: bold;
+}
