@@ -1,5 +1,8 @@
 /* frontend/src/App.css */
-.App { text-align: center; }
+.App {
+  text-align: center;
+}
+
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
@@ -9,23 +12,96 @@
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
+  padding: 20px;
 }
-.button-container { margin: 20px 0; }
-button {
+
+h1 {
+  margin-bottom: 30px;
+}
+
+h2 {
+  margin-top: 0;
+  color: #333;
+}
+
+.form-container {
+  display: flex;
+  gap: 40px; /* Formlar arası boşluk */
+}
+
+.card {
+  background-color: white;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  min-width: 300px;
+}
+
+.card form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+input[type="email"],
+input[type="password"],
+input[type="text"] {
+  padding: 12px;
   font-size: 16px;
-  padding: 10px 20px;
-  margin: 0 10px;
-  cursor: pointer;
-  border-radius: 5px;
-  border: none;
+  border-radius: 4px;
+  border: 1px solid #ccc;
 }
-.success-message {
+
+button {
+  padding: 12px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 4px;
+  border: none;
+  background-color: #61dafb;
+  color: #282c34;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+button:hover {
+  background-color: #4fa8c5;
+}
+
+.api-response {
   margin-top: 20px;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: rgba(97, 218, 251, 0.2);
   color: #61dafb;
   font-weight: bold;
 }
-.error-message {
+
+.shipment-status {
   margin-top: 20px;
-  color: #ff6b6b;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: rgba(255, 255, 255, 0.1);
   font-weight: bold;
+  color: #000000;
+  font-weight: bold;
+  border: 1px solid #9a8c98;
+  max-width: 80%;
+  word-wrap: break-word;
+}
+
+.loggedIn-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.logout-button {
+  background-color: #ff6b6b;
+  color: white;
+}
+
+.logout-button:hover {
+  background-color: #e05252;
 }
