@@ -4,12 +4,14 @@ services:
     build: ./nginx
     container_name: api_gateway
     ports:
-      - "8080:80"
+      - "8888:80"
     depends_on:
       - user-service
       - auth-service
       - tracking-service
+      - update-service
       - frontend
+    restart: unless-stopped
 
   # User Service
   user-service:

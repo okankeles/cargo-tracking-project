@@ -1,0 +1,27 @@
+global:
+  scrape_interval: 15s # Her 15 saniyede bir metrikleri topla
+
+scrape_configs:
+  # 'job_name' ile her bir servis grubunu tanımlıyoruz
+  - job_name: 'user-service'
+    static_configs:
+      - targets: ['user-service:3000'] # İzlenecek servis ve portu
+  
+  - job_name: 'auth-service'
+    static_configs:
+      - targets: ['auth-service:3001']
+
+  - job_name: 'tracking-service'
+    static_configs:
+      - targets: ['tracking-service:3002']
+      
+  - job_name: 'update-service'
+    static_configs:
+      - targets: ['update-service:3003']
+
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['prometheus:9090'] # Prometheus'un kendisini izliyoruz
+
+  # Not: notification-service bir API sunmadığı için onu izlemiyoruz.
+  # Eğer işlem sayısı gibi metrikler sunmak isteseydik, ona da bir metrik sunucusu ekleyebilirdik.
