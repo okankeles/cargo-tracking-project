@@ -1,22 +1,50 @@
-// services/user-service/index.js
 const express = require('express');
 const { Pool } = require('pg');
 const bcrypt = require('bcrypt');
 const fetch = require('node-fetch');
+const client = require('prom-client');
 
 const app = express();
+
+// --- Prometheus Metrik Kurulumu ---
+const register = new client.Registry();
+register.setDefaultLabels({
+  app: 'user-service'
+});
+client.collectDefaultMetrics({ register });
+
+const httpRequestDurationMicroseconds = new client.Histogram({
+    name: 'http_request_duration_ms',
+    help: 'Duration of HTTP requests in ms',
+    labelNames: ['method', 'route', 'code'],
+    buckets: [50, 100, 200, 300, 400, 500, 750, 1000]
+});
+register.registerMetric(httpRequestDurationMicroseconds);
+// --- Prometheus Metrik Kurulumu Bitişi ---
+
 app.use(express.json());
 
-// Database connection pool
+// --- Prometheus Middleware ---
+app.use((req, res, next) => {
+    if (req.path === '/metrics') {
+        return next();
+    }
+    const end = httpRequestDurationMicroseconds.startTimer();
+    res.on('finish', () => {
+        end({ route: req.route ? req.route.path : req.path, code: res.statusCode, method: req.method });
+    });
+    next();
+});
+// --- Prometheus Middleware Bitişi ---
+
 const pool = new Pool({
     user: process.env.DB_USER,
-    host: process.env.DB_HOST,
+    host: 'postgres_db',
     database: process.env.DB_NAME,
     password: process.env.DB_PASSWORD,
     port: process.env.DB_PORT,
 });
 
-// Simple table creation logic (for demo purposes)
 const createTable = async () => {
     await pool.query(`
         CREATE TABLE IF NOT EXISTS users (
@@ -28,7 +56,6 @@ const createTable = async () => {
     console.log("Users table is ready.");
 };
 
-// Endpoint to register a new user
 app.post('/register', async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -47,7 +74,6 @@ app.post('/register', async (req, res) => {
     }
 });
 
-// Endpoint to log in a user
 app.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -62,7 +88,6 @@ app.post('/login', async (req, res) => {
             return res.status(401).json({ error: 'Invalid credentials.' });
         }
         
-        // !! IMPORTANT: Ask the Auth Service to create a token for us
         const tokenResponse = await fetch('http://auth-service:3001/token', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -75,6 +100,16 @@ app.post('/login', async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Login failed.' });
+    }
+});
+
+// Prometheus /metrics endpoint
+app.get('/metrics', async (req, res) => {
+    try {
+        res.set('Content-Type', register.contentType);
+        res.end(await register.metrics());
+    } catch (ex) {
+        res.status(500).end(ex);
     }
 });
 

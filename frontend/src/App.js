@@ -1,8 +1,12 @@
+// frontend/src/App.js
+
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import Navbar from './components/Navbar';
 import AuthModal from './components/AuthModal';
 import TrackShipment from './components/TrackShipment';
+import Faq from './components/Faq'; // Yeni bileşeni import et
+import Footer from './components/Footer'; // Yeni bileşeni import et
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem('token'));
@@ -38,8 +42,16 @@ function App() {
         onLogoutClick={handleLogout}
       />
       <main className="main-content">
-        <TrackShipment token={token} />
+        <div className="hero-section">
+            <div className="hero-content">
+                <TrackShipment token={token} />
+            </div>
+        </div>
+        <Faq />
       </main>
+      
+      <Footer />
+
       {isModalOpen && !token && (
         <AuthModal
           onLoginSuccess={handleLoginSuccess}

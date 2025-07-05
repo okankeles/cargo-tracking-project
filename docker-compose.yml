@@ -1,5 +1,6 @@
+version: '3.8'
+
 services:
-  # API Gateway (NGINX) - The single entry point
   nginx:
     build: ./nginx
     container_name: api_gateway
@@ -7,13 +8,10 @@ services:
       - "8888:80"
     depends_on:
       - user-service
-      - auth-service
       - tracking-service
-      - update-service
       - frontend
     restart: unless-stopped
 
-  # User Service
   user-service:
     build: ./services/user-service
     container_name: user_service
@@ -24,22 +22,11 @@ services:
       DB_NAME: cargo_db
       DB_PORT: 5432
     depends_on:
-      postgres:
-        condition: service_healthy
+      - postgres
 
-  # Auth Service
   auth-service:
     build: ./services/auth-service
     container_name: auth_service
-    environment:
-      DB_USER: user
-      DB_PASSWORD: password
-      DB_HOST: postgres_db
-      DB_NAME: cargo_db
-      DB_PORT: 5432
-    depends_on:
-      postgres:
-        condition: service_healthy
 
   tracking-service:
     build: ./services/tracking-service
@@ -51,10 +38,24 @@ services:
       DB_NAME: cargo_db
       DB_PORT: 5432
     depends_on:
-      postgres:
-        condition: service_healthy
+      - postgres
 
-  # Our PostgreSQL Database Service
+  update-service:
+    build: ./services/update-service
+    container_name: update_service
+    depends_on:
+      - rabbitmq
+
+  notification-service:
+    build: ./services/notification-service
+    container_name: notification_service
+    depends_on:
+      - rabbitmq
+  
+  frontend:
+    build: ./frontend
+    container_name: frontend_service
+
   postgres:
     image: postgres:13-alpine
     container_name: postgres_db
@@ -64,51 +65,37 @@ services:
       POSTGRES_DB: cargo_db
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d cargo_db"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  # Message Broker Service (RabbitMQ)
+  
   rabbitmq:
     image: rabbitmq:3.9-management-alpine
     container_name: rabbitmq
     ports:
-      - "5672:5672" # RabbitMQ port
-      - "15672:15672" # Management UI port
+      - "5672:5672"
+      - "15672:15672"
     volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
-    healthcheck:
-      test: rabbitmq-diagnostics -q ping
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      - rabbitmq_data:/var/lib/rabbitmq/
 
-  update-service:
-    build: ./services/update-service
-    container_name: update_service
-    environment:
-      RABBITMQ_HOST: rabbitmq
-      RABBITMQ_PORT: 5672
+  prometheus:
+    image: prom/prometheus:v2.37.0
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+
+  grafana:
+    image: grafana/grafana:9.1.0
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
     depends_on:
-      rabbitmq:
-        condition: service_healthy
+      - prometheus
 
-  notification-service:
-    build: ./services/notification-service
-    container_name: notification_service
-    environment:
-      RABBITMQ_HOST: rabbitmq
-      RABBITMQ_PORT: 5672
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-
-  # Frontend Service
-  frontend:
-    build: ./frontend
-    container_name: frontend_service
 volumes:
   postgres_data:
   rabbitmq_data:
+  grafana_data:
