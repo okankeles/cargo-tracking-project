@@ -1,10 +1,15 @@
-// frontend/src/components/Navbar.js
-
 import React from 'react';
-import logo from '../logo-dhl-style.png'; // Yeni logomuzu import ediyoruz
-import { FaGlobe, FaUserCircle } from 'react-icons/fa'; // Dil ve profil ikonları
+import logo from '../logo-dhl-style.png';
+import { FaGlobe, FaUserCircle, FaChevronDown } from 'react-icons/fa';
 
-const Navbar = ({ user, onLoginClick, onLogoutClick }) => {
+// Yeni prop'ları alıyoruz: currentLang, onChangeLang
+const Navbar = ({ user, onLoginClick, onLogoutClick, currentLang, onChangeLang }) => {
+  
+  const handleLanguageChange = (e, lang) => {
+    e.preventDefault(); // Sayfanın en üstüne atlamasını engelle
+    onChangeLang(lang);
+  };
+
   return (
     <nav className="navbar-dhl">
       <div className="navbar-left">
@@ -21,8 +26,13 @@ const Navbar = ({ user, onLoginClick, onLogoutClick }) => {
           <FaGlobe className="globe-icon" />
           <span>Turkey</span>
           <div className="language-options">
-            <a href="#en">EN</a>
-            <a href="#tr" className="active-lang">TR</a>
+            {/* 'active-lang' sınıfını dinamik olarak ata ve onClick olayını yönet */}
+            <a href="#en" 
+               className={currentLang === 'en' ? 'active-lang' : ''} 
+               onClick={(e) => handleLanguageChange(e, 'en')}>EN</a>
+            <a href="#tr" 
+               className={currentLang === 'tr' ? 'active-lang' : ''} 
+               onClick={(e) => handleLanguageChange(e, 'tr')}>TR</a>
           </div>
         </div>
         <div className="portal-login">
@@ -32,9 +42,9 @@ const Navbar = ({ user, onLoginClick, onLogoutClick }) => {
               <button onClick={onLogoutClick} className="logout-btn-dhl">Log Out</button>
             </div>
           ) : (
-            <div onClick={onLoginClick} className="login-trigger">
+            <div onClick={onLoginClick} className="portal-login-minimal" title="Login / Register">
               <FaUserCircle className="user-icon" />
-              <span>Customer Portal Logins</span>
+              <FaChevronDown className="user-icon-arrow" />
             </div>
           )}
         </div>

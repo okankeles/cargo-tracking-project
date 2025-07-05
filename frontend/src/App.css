@@ -5,23 +5,24 @@
 body {
   margin: 0;
   font-family: 'Roboto', sans-serif;
-  background-color: #ffffff; /* Ana arka plan artık beyaz */
+  background-color: #f7f8fa;
   color: #333;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* --- YENİ Navbar (DHL Stili) --- */
+/* --- Navbar (DHL Stili - Son Ayarlar) --- */
 .navbar-dhl {
   width: 100%;
   height: 90px;
-  background: linear-gradient(to right, #ffcc00 85%, rgba(244, 244, 244, 0) 100%); /* Sarıdan şeffafa geçiş */
+  /* Başlangıç rengi #ffcc00, bitiş rengi sayfa arka planının şeffaf hali */
+  background: linear-gradient(to right, #ffcc00 85%, rgba(247, 248, 250, 0) 100%);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 5%;
   box-sizing: border-box;
-  position: sticky; /* Sayfayı kaydırınca yukarıda sabit kalması için */
+  position: sticky;
   top: 0;
   z-index: 1000;
   border-bottom: 1px solid #e0e0e0;
@@ -37,18 +38,19 @@ body {
   height: 45px;
 }
 
+/* Navbar linklerinin orijinal stili (kalın font yok) */
 .nav-link {
   text-decoration: none;
   color: #333;
   font-weight: 700;
   font-size: 16px;
-  padding: 33px 0; /* Üstten ve alttan boşlukla yüksekliği ayarlar */
+  padding: 33px 0;
   border-bottom: 3px solid transparent;
   transition: border-color 0.2s, color 0.2s;
 }
 
 .nav-link.active, .nav-link:hover {
-  border-bottom: 3px solid #d40511; /* Kırmızı vurgu çizgisi */
+  border-bottom: 3px solid #d40511;
   color: #d40511;
 }
 
@@ -88,14 +90,14 @@ body {
   text-decoration: underline;
 }
 
+/* Login/Logout Bölümleri */
 .portal-login, .user-info {
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 15px;
   font-weight: 500;
 }
-.user-info { gap: 15px; } /* Giriş yapınca boşluk artsın */
 
 .user-icon {
   font-size: 24px;
@@ -103,44 +105,78 @@ body {
 }
 
 .logout-btn-dhl {
-    background: #d40511;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 4px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.2s;
+  background: #d40511;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 .logout-btn-dhl:hover {
-    background-color: #a7040d;
+  background-color: #a7040d;
 }
 
-/* --- Ana İçerik Alanı --- */
+/* YENİ: Minimalist Login Butonu Stili */
+.portal-login-minimal {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+.portal-login-minimal:hover {
+    background-color: rgba(0,0,0,0.05);
+}
+
+.user-icon-arrow {
+    font-size: 12px;
+    color: #333;
+}
+
+
+/* --- Ana İçerik ve Diğer Tüm Stiller (Değişiklik Yok) --- */
 .main-content {
   width: 100%;
 }
 
-/* --- YENİ Hero Bölümü Stilleri --- */
 .hero-section {
     width: 100%;
     height: 550px;
-    background-image: url('./assets/hero-background.png'); /* Assets klasöründen resmi çeker */
+    background-image: url('./assets/hero-background.png');
     background-size: cover;
-    background-position: center 30%; /* Resmi biraz yukarıdan başlatır */
+    background-position: center 30%;
     display: flex;
     align-items: center;
     justify-content: flex-start;
     padding-left: 10%;
     box-sizing: border-box;
+    position: relative; /* :before pseudo-element'i için bu gerekli */
+    z-index: 1; /* İçeriğin overlay'in üstünde kalması için */
+}
+
+/* YENİ: Siyah overlay katmanını oluşturan stil */
+.hero-section::before {
+    content: ''; /* Pseudo-element için zorunlu */
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.3); /* %30 opaklıkta siyah bir katman */
+    z-index: 2; /* Bu katman resmin üstünde olacak */
 }
 
 .hero-content {
     width: 100%;
     max-width: 600px;
+    position: relative; /* Pozisyonlama bağlamı oluşturur */
+    z-index: 3; /* Overlay'in z-index'inden (2) daha büyük olmalı */
 }
 
-/* Kargo Takip Kutusu Stilleri */
 .track-container {
   background-color: white;
   padding: 30px 40px;
@@ -149,7 +185,7 @@ body {
   width: 100%;
 }
 
-.track-container h1, .track-container h2 {
+.track-container h1 {
   font-size: 32px;
   font-weight: 700;
   margin-top: 0;
@@ -185,20 +221,10 @@ body {
   border: none;
   border-radius: 0 4px 4px 0;
   cursor: pointer;
-  transition: background-color 0.2s;
 }
 .track-button:hover { background-color: #a7040d; }
 
-
-/* --- Kargo Detayları ve Durumu Stilleri --- */
-.shipment-details {
-  margin-top: 25px;
-  padding: 20px;
-  border: 1px solid #e0e0e0;
-  border-radius: 5px;
-  text-align: left;
-  background-color: #fafafa;
-}
+.shipment-details { margin-top: 25px; padding: 20px; border: 1px solid #e0e0e0; border-radius: 5px; text-align: left; background-color: #fafafa; }
 .shipment-details h3 { margin-top: 0; color: #007bff; font-size: 20px; }
 .shipment-details p { margin: 8px 0; line-height: 1.5; }
 .status-error { color: #D8000C; font-weight: bold; background-color: #FFD2D2; padding: 15px; border-radius: 5px; }
@@ -207,20 +233,8 @@ body {
 .shipment-events li:last-child { border-bottom: none; }
 .shipment-events li strong { color: #333; }
 
-
-/* --- SSS (FAQ) Bölümü Stilleri --- */
-.faq-container {
-    width: 100%;
-    max-width: 800px;
-    margin: 60px auto;
-    padding: 0 20px;
-    box-sizing: border-box;
-}
-.faq-container h2 {
-    font-size: 28px;
-    font-weight: 700;
-    margin-bottom: 30px;
-}
+.faq-container { width: 100%; max-width: 800px; margin: 60px auto; padding: 0 20px; box-sizing: border-box; }
+.faq-container h2 { font-size: 28px; font-weight: 700; margin-bottom: 30px; }
 .faq-item { border-bottom: 1px solid #e0e0e0; }
 .faq-question { padding: 20px 0; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 18px; font-weight: 500; }
 .faq-answer { padding: 0px 20px 20px 20px; line-height: 1.6; color: #555; animation: fadeIn 0.5s ease; }
@@ -230,13 +244,7 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-
-/* --- Footer Stilleri --- */
-.footer {
-    background-color: #f4f4f4;
-    padding: 40px 5%;
-    color: #555;
-}
+.footer { background-color: #f4f4f4; padding: 40px 5%; color: #555; }
 .footer-content { display: flex; justify-content: space-between; padding-bottom: 40px; border-bottom: 1px solid #ddd; flex-wrap: wrap; gap: 20px; }
 .footer-column { display: flex; flex-direction: column; min-width: 200px; }
 .footer-column h4 { color: #333; margin-top: 0; margin-bottom: 20px; }
@@ -248,29 +256,8 @@ body {
 .legal-links a { font-size: 12px; margin-right: 15px; text-decoration: none; color: #555; }
 .social-icons a { font-size: 20px; color: #555; margin-left: 15px; }
 
+.scroll-to-top { position: fixed; bottom: 20px; right: 20px; background-color: #d40511; color: white; border: none; border-radius: 50%; width: 50px; height: 50px; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 1000; transition: opacity 0.3s; }
 
-/* --- Scroll-to-Top Butonu --- */
-.scroll-to-top {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background-color: #d40511;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    font-size: 24px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-    z-index: 1000;
-    transition: opacity 0.3s;
-}
-
-/* --- Login/Register Modal Penceresi Stilleri --- */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 1001; }
 .modal-content { background: white; padding: 40px; border-radius: 8px; width: 100%; max-width: 400px; position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
 .close-modal { position: absolute; top: 10px; right: 15px; font-size: 28px; border: none; background: none; cursor: pointer; color: #aaa; }

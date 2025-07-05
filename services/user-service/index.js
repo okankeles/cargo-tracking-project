@@ -39,7 +39,7 @@ app.use((req, res, next) => {
 
 const pool = new Pool({
     user: process.env.DB_USER,
-    host: 'postgres_db',
+    host: process.env.DB_HOST,
     database: process.env.DB_NAME,
     password: process.env.DB_PASSWORD,
     port: process.env.DB_PORT,
@@ -114,7 +114,7 @@ app.get('/metrics', async (req, res) => {
 });
 
 const PORT = 3000;
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`User Service running on port ${PORT}`);
     createTable();
 });

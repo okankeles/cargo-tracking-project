@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const TrackShipment = ({ token }) => {
+// Yeni prop'ları alıyoruz: trackTitle, trackPlaceholder, trackButton
+const TrackShipment = ({ token, trackTitle, trackPlaceholder, trackButton }) => {
   const [trackingId, setTrackingId] = useState('');
   const [shipmentStatus, setShipmentStatus] = useState(null);
 
@@ -18,7 +19,7 @@ const TrackShipment = ({ token }) => {
 
   const renderEvents = (events) => (
     <ul className="shipment-events">
-      {events.map((event, index) => (
+      {events && events.map((event, index) => (
         <li key={index}>
           <strong>{event.timestamp}:</strong> {event.description} ({event.location})
         </li>
@@ -28,17 +29,18 @@ const TrackShipment = ({ token }) => {
 
   return (
     <div className="track-container">
-      <h1>Track Your Shipment</h1>
+      {/* Statik metin yerine prop'ları kullanıyoruz */}
+      <h1>{trackTitle}</h1>
       <form className="track-form" onSubmit={handleTrackShipment}>
         <input
           type="text"
           className="track-input"
-          placeholder="Enter your tracking number..."
+          placeholder={trackPlaceholder}
           value={trackingId}
           onChange={(e) => setTrackingId(e.target.value)}
           required
         />
-        <button type="submit" className="track-button">Track</button>
+        <button type="submit" className="track-button">{trackButton}</button>
       </form>
       {shipmentStatus && (
         <div className="shipment-details">

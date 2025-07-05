@@ -18,7 +18,7 @@ services:
     environment:
       DB_USER: user
       DB_PASSWORD: password
-      DB_HOST: postgres_db
+      DB_HOST: postgres
       DB_NAME: cargo_db
       DB_PORT: 5432
     depends_on:
@@ -34,7 +34,7 @@ services:
     environment:
       DB_USER: user
       DB_PASSWORD: password
-      DB_HOST: postgres_db
+      DB_HOST: postgres
       DB_NAME: cargo_db
       DB_PORT: 5432
     depends_on:
@@ -59,6 +59,8 @@ services:
   postgres:
     image: postgres:13-alpine
     container_name: postgres_db
+    ports:
+      - "5433:5432"
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
